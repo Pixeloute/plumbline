@@ -1,0 +1,838 @@
+﻿Plumb Line Observatory — PRD v2.0CONFIDENTIAL
+
+
+PRODUCT REQUIREMENTS DOCUMENT
+Plumb Line Observatory
+A critical epistemology instrument for mapping manipulation patterns and biblical principles in modern discourse
+
+
+Field
+	Detail
+	Project
+	Plumb Line Observatory
+	Version
+	2.0 — Phase 2 (Multi-Lens)
+	Last Updated
+	March 2026
+	Author
+	Laith Wallace
+	Status
+	Active Development
+	Repository
+	github.com/plumb-line-observatory
+	Stack
+	React 19 + Three.js + D3 + Vite
+	
+
+13
+Discourse nodes (v1)
+	5
+Plumb dimensions
+	4
+Ideological tribes
+	3
+Build phases
+	________________
+
+
+1. Overview
+Plumb Line Observatory is an interactive 3D data visualisation tool that maps manipulation patterns and biblical principles in modern media, political, and religious discourse.
+The project takes its name from the prophetic image of the plumb line in Amos 7:7-8 — a builder's tool for measuring straightness, used by God to test whether Israel's moral and social structures were true. In the same way, the Observatory holds a straight line against modern discourse to ask: what techniques are being used, what frameworks are being invoked, and do they align across ideological boundaries we assume to be different?
+Built on React 19 and Three.js, the tool renders 13 discourse analysis cases (nodes) as glowing 3D spheres in a star-field environment, coloured by ideological tribe: Right, Left, Religion, and Geopolitics. Each node is scored across seven manipulation dimensions and seven biblical principles, producing a five-axis "plumb score" (process, locus, uplift, means, blueprint) that functions as a structural fingerprint.
+Phase 2 of the project introduces multiple view modes — a 2D force-directed graph, timeline scrubber, and fingerprint radar view — transforming the Observatory from a beautiful artefact into a multi-lens epistemology instrument.
+
+
+2. Problem Statement
+2.1 The Core Epistemic Problem
+Modern audiences consume discourse through tribal filters. A reader of The Guardian and a reader of The Daily Telegraph exist in structurally separate epistemic worlds — different sources, different editorial angles, different interpretive frameworks. What is invisible to both is that the rhetorical machinery underneath their respective sources is often identical. Both may use urgency framing. Both may use asymmetric attribution. Both may invoke structural justice frameworks derived from the same biblical tradition.
+The result is a population that argues passionately about conclusions while sharing no common ground for evaluating the quality of the reasoning that produced those conclusions. This is not merely a political problem — it is a formation problem. People cannot develop epistemic integrity if they cannot see the structure of what they are consuming.
+
+
+  i  
+	The Plumb Line Observatory was designed to surface this invisible structural layer — to show that ideological enemies often use the same weapons, and that the weapons predate the fights.
+	
+
+2.2 The Design Gap
+Existing fact-checking tools operate at the claims level (true/false). Media bias trackers operate at the source level (left/right). Neither operates at the rhetorical structure level. The Observatory is the only tool that cross-maps manipulation patterns and theological frameworks simultaneously, revealing connections across ideological lines that no single-axis analysis could surface.
+2.3 What Phase 1 Solved
+Phase 1 (live) delivered the 3D sphere visualisation with 13 hand-crafted nodes. It proved the concept, established the data model, and produced a genuinely stunning visual artefact. What it could not do:
+* Show the force relationships between nodes clearly — the 3D sphere obscures clustering
+* Communicate change over time — there is no temporal dimension
+* Let users interrogate a single node's structural fingerprint at a glance — the detail panel is text-heavy
+* Scale beyond ~20 nodes without the sphere becoming visually unreadable
+
+
+3. Goals & Objectives
+3.1 Primary Goals
+Goal
+	Description
+	Priority
+	Multi-lens viewing
+	Users can switch between 3D sphere, 2D force graph, fingerprint radar, and timeline modes without losing context
+	P0
+	Structural clarity
+	Cross-tribe connections are visually undeniable in at least one view mode
+	P0
+	Node fingerprinting
+	Each node's plumb score is instantly legible as a visual signature
+	P0
+	Temporal awareness
+	The timeline scrubber reveals how the discourse landscape has changed over time
+	P1
+	Performance at scale
+	The tool handles up to 100 nodes without frame-rate degradation
+	P1
+	Embeddability
+	Any view mode can be screenshotted or shared as a standalone URL
+	P2
+	
+
+3.2 Success Metrics
+Metric
+	Baseline
+	Target
+	How Measured
+	Time to insight
+	>60s to find a cross-tribe connection
+	<15s in 2D force graph mode
+	User testing — 5 participants
+	Node legibility
+	38% of users could read plumb scores from 3D view
+	>80% can read radar fingerprint at a glance
+	Comprehension test
+	View mode adoption
+	100% of users on 3D sphere (only option)
+	At least 2 view modes used per session
+	Session analytics
+	Session duration
+	Average 2m 40s
+	Average 5m+
+	Vercel analytics
+	Node count scalability
+	13 nodes functional
+	50 nodes with no performance drop
+	Lighthouse / fps monitoring
+	
+
+3.3 Non-Goals
+This document explicitly excludes the following from Phase 2 scope:
+* AI-powered automatic node generation (Phase 3)
+* Live data ingestion from GDELT or NewsAPI (Phase 3)
+* User authentication or account creation
+* User-submitted nodes or community features
+* Server-side rendering or backend infrastructure
+* Mobile-first responsive design (desktop browser primary)
+* Internationalisation (English only)
+
+
+________________
+
+
+4. User Personas
+Persona
+	Profile
+	Primary Goal
+	Key Needs
+	The Curious Thinker
+	Educated adult, 30–55, reads widely, politically engaged but not tribal. Consumes long-form journalism, podcasts, books on society and culture.
+	Understand why public discourse feels broken and find a framework for navigating it
+	Quick orientation, intuitive exploration, moments of genuine surprise that make them want to share
+	The Teacher / Preacher
+	Laith and peers — people who communicate complex ideas to audiences. Needs credible visual evidence to anchor abstract claims.
+	Use the Observatory as a teaching aid or sermon illustration — "look, they all use the same playbook"
+	High visual impact, printable/screenshottable views, clear labelling, ability to filter to relevant nodes
+	The Researcher / Analyst
+	Academic, journalist, or policy analyst interested in media literacy, disinformation, or rhetorical analysis.
+	Extract structured insight about which manipulation techniques co-occur and how they cluster across tribes
+	Data density, exportable views, node filtering by dimension, ability to see precise scores
+	The Developer / Technologist
+	Technical user who discovers the project via GitHub or a demo link. Interested in what is achievable with Three.js, D3, and Claude Code.
+	Understand the technical architecture and be inspired by what Claude Code can produce at the frontier
+	Clean code, ambitious visual choices, performance, a demo that earns genuine respect
+	
+
+5. Data Model
+5.1 Node Schema
+Each discourse analysis case (node) carries the following data structure. This schema is fixed for Phase 2; Phase 3 will extend it with timestamps, source URLs, and auto-generated fields from the Claude API.
+
+
+{  id: string,              // Unique identifier  title: string,           // Short case name  description: string,     // 2–3 sentence summary  tribe: "RIGHT" | "LEFT" | "RELIGION" | "GEOPOLITICS",  date: string,            // ISO 8601 — enables timeline mode  source: string,          // Publication or origin  manipulation: string[],  // Keys from MANIPULATION_TYPES  biblical: string[],      // Keys from BIBLICAL_PRINCIPLES  plumb: {    process: 1–5,          // How it was constructed    locus: 1–5,            // Who bears the burden    uplift: 1–5,           // Does it build or diminish    means: 1–5,            // What mechanisms are deployed    blueprint: 1–5,        // Does it align with moral law  }}
+
+
+5.2 Manipulation Types
+Key
+	Name
+	Description
+	AFAFF
+	Ad Hominem / Appeal to Authority
+	Attacking or appealing to the person rather than the argument
+	MOTIVE
+	Motive Attribution
+	Assigning malicious or self-interested intent without evidence
+	SCALE
+	Scale Distortion
+	Presenting partial statistics as representative of the whole
+	URGENCY
+	False Urgency
+	Manufacturing crisis framing to bypass deliberation
+	ASYM
+	Asymmetric Framing
+	Applying different standards to identical behaviours based on tribal identity
+	CATEGORY
+	Category Collapse
+	Conflating distinct categories to produce false equivalence or false contrast
+	FLUENCY
+	Fluency Heuristic
+	Using confident delivery or familiar language to substitute for substance
+	
+
+5.3 Biblical Principles
+Key
+	Name
+	Description
+	IMAGO
+	Imago Dei
+	Every human bears the image of God — dignity is non-negotiable
+	PROPHETIC
+	Prophetic Witness
+	Scripture's mandate to speak truth to power and name injustice
+	STRUCTURAL
+	Structural Justice
+	The recognition that sin operates at systemic, not only individual, levels
+	LIBERTY
+	Liberty of Conscience
+	The right of every person to reach conclusions through their own reasoning
+	JUBILEE
+	Jubilee Economics
+	Periodic reset of economic imbalances as a structural moral obligation
+	GREAT
+	Great Commission
+	The call to disciple all nations — implications for cross-cultural respect
+	GER
+	Care of the Stranger
+	The ger (sojourner) principle — special protection owed to the vulnerable outsider
+	
+
+5.4 Edge Logic
+Edges between nodes are computed at render time — two nodes are connected if they share at least one manipulation type key or at least one biblical principle key. Edge weight is the count of shared keys. In Phase 2, edge weight drives visual thickness in the force graph and chord diagram views.
+  !  
+	Adding a date field to all existing nodes is a Phase 2 prerequisite. Without it, the timeline scrubber cannot function. All 13 existing nodes must be backdated before the timeline view is released.
+	
+
+________________
+
+
+6. Phase 2 Feature Specifications
+Phase 2 introduces four distinct view modes, a global view-switcher UI, and per-node enhancements. Each mode surfaces different structural truths about the data.
+
+
+6.1 View Mode Switcher
+A persistent top-of-screen mode bar replaces the current absent navigation. The switcher is always visible, allows instant transition between all view modes, and persists the selected node/filter state across transitions.
+
+
+Mode
+	Icon Glyph
+	Label
+	Description
+	Sphere
+	◉
+	3D Sphere
+	Existing Three.js globe — retained as the visual flagship
+	Force
+	⬡
+	2D Network
+	D3 force-directed graph — nodes as circles, edges as weighted lines
+	Radar
+	◎
+	Fingerprint
+	Radar / spider chart showing one node's five plumb dimensions
+	Timeline
+	▬
+	Timeline
+	Horizontal time axis — nodes placed by date, filterable by tribe
+	
+
+Transition behaviour: switching modes cross-fades the canvas (300ms opacity transition). The selected node, active filters, and hover state are preserved across transitions. The mode switcher is keyboard-navigable (arrow keys between modes).
+
+
+6.2 2D Force-Directed Network (Graph Mode)
+6.2.1 Purpose
+The 3D sphere is visually spectacular but structurally ambiguous — nodes positioned on a sphere surface give no clustering information. The 2D force graph makes structural relationships the primary output: heavily connected nodes cluster together; isolated nodes float to the periphery. Cross-tribe clusters become impossible to miss.
+6.2.2 Behaviour
+* D3 force simulation with: charge repulsion (−300), link attraction (distance proportional to 1/edge_weight), centre gravity (pull toward viewport centre), collision detection (radius = node_radius + 12px)
+* Nodes are circles, radius proportional to total edge count (min 12px, max 36px)
+* Node colour follows the existing tribe colour system (Right = coral, Left = blue, Religion = gold, Geopolitics = purple)
+* Edge lines are drawn with opacity and stroke-width proportional to edge weight (shared keys count)
+* Nodes are draggable — dragging one node detaches it from the simulation temporarily, then releases back
+* Clicking a node opens the existing right-panel detail view
+* Hover highlights the node and dims all non-adjacent nodes/edges (focus mode)
+* A "cluster by tribe" toggle groups nodes into four quadrants using a quadrant force, overriding the free simulation
+* A "show labels" toggle renders node title beneath each circle (default: off above 30 nodes)
+6.2.3 Acceptance Criteria
+* Simulation reaches stable state within 3 seconds on first render
+* Dragging any node does not drop below 30fps
+* Cross-tribe shared-manipulation clusters are visually apparent without any filter active
+* Cluster-by-tribe toggle transitions smoothly (500ms)
+* Mode transition from 3D sphere to force graph completes in under 400ms
+
+
+6.3 Fingerprint Radar View (Plumb Fingerprint Mode)
+6.3.1 Purpose
+The five plumb dimensions (process, locus, uplift, means, blueprint) are currently only readable as numbers in the node detail panel. The radar view makes them instantly legible as a visual signature — a "fingerprint" that is unique to each node and comparable across nodes. The most powerful use is overlaying two nodes from different tribes to show structural similarity or difference.
+6.3.2 Behaviour
+* Primary view: single-node radar chart — filled polygon on a five-axis grid, 1–5 scale
+* Each axis is labelled (process, locus, uplift, means, blueprint) with a brief descriptor on hover
+* The filled area uses the node's tribe colour at 40% opacity; the stroke is solid tribe colour
+* Score values are shown at each vertex as a small label (e.g. "4 / 5")
+* Comparison mode: a second node can be selected from a dropdown — its radar overlays in a contrasting colour (30% opacity fill) to reveal convergence and divergence
+* The grid background shows a reference polygon at score 3.0 (midpoint) as a thin dashed line
+* Below the chart: a manipulation tag cloud (bubble chart) showing all manipulation types present in the selected node(s), sized by frequency across all nodes with that type
+* A "what does this mean?" expand section provides plain-English interpretation of the node's plumb profile
+6.3.3 Acceptance Criteria
+* Selecting any node instantly renders its radar (< 100ms)
+* Overlay mode clearly distinguishes two nodes with colour and opacity
+* On tablet viewports (768px+) the radar and comparison panel both fit without horizontal scroll
+* Each axis label is readable without hover on desktop
+* Radar view is navigable by keyboard (tab through nodes to change selection)
+
+
+6.4 Timeline Scrubber (Timeline Mode)
+6.4.1 Purpose
+Discourse does not happen in a vacuum — it happens in a sequence, and patterns emerge over time. The timeline view shows when each analysis case was published or broadcast, enabling users to see whether certain manipulation techniques cluster around specific events (elections, crises, cultural flashpoints) and whether the biblical principles invoked shift over time.
+6.4.2 Behaviour
+* Horizontal SVG/Canvas timeline with nodes placed at their date position
+* Y-axis: tribe swim lanes (Right, Left, Religion, Geopolitics) — nodes sit in their tribe row
+* A draggable range scrubber at the bottom sets a visible time window (e.g. show only 2022–2024)
+* Nodes outside the scrubber window are dimmed (10% opacity), not hidden
+* A "play" button animates the scrubber from earliest to latest date at 1x, 2x, 4x speed
+* Clicking a node at any position opens the standard detail panel
+* Edge lines between nodes that share manipulation types are shown as curved arcs, visible when both nodes are in the active window
+* A "highlight manipulation type" dropdown filters the arc display to only show edges from a specific pattern (e.g. show only URGENCY connections)
+* The visible date range label updates in real time as the scrubber moves
+6.4.3 Prerequisites
+  !  
+	All 13 existing nodes must have a date field added before the timeline view renders correctly. Node dates should reflect the publication or broadcast date of the analysed discourse, not the date of analysis. This is a data entry task estimated at 2 hours.
+	6.4.4 Acceptance Criteria
+* Timeline renders all 13 nodes in correct date order with no overlapping node circles
+* Play animation runs at consistent speed across the full date range
+* Scrubber drag is smooth at 60fps
+* Edge arcs only display between nodes within the active time window
+* Date range label is always accurate to the scrubber position
+
+
+________________
+
+
+7. UI / UX Requirements
+7.1 Design Language
+The Observatory must feel like a serious instrument, not a data art project. The visual language is dark-first (near-black background #0A0F1E), with precise neon-to-muted tribe colours, thin geometric layouts, and deliberate motion. Reference aesthetic: the combination of a scientific instrument panel (NASA mission control) with editorial precision (The Economist data graphics).
+
+
+Token
+	Value
+	Usage
+	Background
+	#0A0F1E
+	Global canvas background
+	Surface
+	#121929
+	Panel backgrounds, cards
+	Border
+	#1E2D4A (20% opacity)
+	All UI borders, grid lines
+	Text Primary
+	#E8EDF8
+	Headlines, active labels
+	Text Secondary
+	#7A90B8
+	Body copy, descriptions
+	Tribe — Right
+	#FF6B6B (coral)
+	Right-leaning discourse nodes
+	Tribe — Left
+	#4F7FFF (electric blue)
+	Left-leaning discourse nodes
+	Tribe — Religion
+	#C9A84C (gold)
+	Religious/theological discourse nodes
+	Tribe — Geopolitics
+	#A67FD4 (purple)
+	Geopolitical discourse nodes
+	Accent
+	#4F7FFF
+	Interactive elements, highlights, mode switcher
+	Danger
+	#FF4D4D
+	High manipulation scores, warnings
+	Success
+	#3DBA7E
+	Low manipulation, high biblical alignment
+	
+
+7.2 Typography
+Role
+	Font
+	Size
+	Weight
+	Usage
+	Display
+	Space Grotesk
+	32–48px
+	700
+	App name, mode titles on entry
+	Heading
+	Space Grotesk
+	18–24px
+	600
+	Panel headings, section labels
+	Body
+	Inter
+	14–16px
+	400
+	Node descriptions, detail panel text
+	Mono
+	JetBrains Mono
+	12–13px
+	400
+	Score values, axis labels, data readouts
+	Label
+	Inter
+	11–12px
+	500
+	Tribe badges, mode switcher, filter chips
+	
+
+7.3 Interaction Patterns
+Node Selection
+* Single click: select node, open detail panel on right, highlight connected edges
+* Double click: in force graph, zoom to fit the node and its direct neighbours
+* Escape: deselect all, close detail panel
+* Right click: context menu with options — "compare in radar", "filter to connections", "copy node data"
+View Transitions
+* Mode switch: 300ms cross-fade between canvases, selected state preserved
+* Filter change: nodes that fall out of filter dim to 10% opacity over 200ms
+* Panel open/close: slide in/out from right, 250ms ease-out
+Keyboard Navigation
+* 1/2/3/4: switch view modes
+* Arrow keys: cycle through nodes when detail panel is open
+* F: toggle filter sidebar
+* R: reset to default view (clear selection, filters, zoom)
+* /: focus search input
+
+
+7.4 Responsive Behaviour
+Viewport
+	Behaviour
+	≥1280px (Desktop)
+	Full layout: canvas left, detail panel right (320px), filter sidebar left (240px, collapsible)
+	1024–1279px (Small desktop)
+	Filter sidebar hidden by default (toggle button visible). Detail panel overlays canvas as a drawer.
+	768–1023px (Tablet)
+	Force graph and radar modes fully functional. 3D sphere and timeline available but with reduced interactivity.
+	<768px (Mobile)
+	Display a read-only "snapshot" mode with no Three.js canvas. Show radar charts only. Warning banner prompts desktop use.
+	
+
+________________
+
+
+8. Technical Architecture
+8.1 Stack
+Layer
+	Technology
+	Rationale
+	Framework
+	React 19
+	Existing codebase; concurrent rendering for smooth view transitions
+	3D rendering
+	Three.js (existing)
+	Retained as-is for sphere view; no changes to existing canvas code
+	2D graph
+	D3 v7 (force simulation)
+	Industry standard for force-directed graphs; excellent physics simulation
+	Charts
+	D3 v7 (SVG paths)
+	Radar/spider chart hand-rolled in SVG for full visual control
+	Timeline
+	D3 v7 (scale + axis)
+	Date scales, axis generators, and brush component for scrubber
+	Build tool
+	Vite (existing)
+	No change
+	Deployment
+	Vercel (existing)
+	No change; auto-deploy on push to main
+	Styling
+	Inline React style props (existing)
+	Extend pattern; CSS variables via :root for design tokens
+	State management
+	React useState/useReducer (existing)
+	No external state library; view mode added to existing state
+	Fonts
+	Google Fonts (Space Grotesk, Inter, JetBrains Mono)
+	CDN-loaded; preconnect in index.html
+	
+
+8.2 Component Architecture
+Phase 2 refactors the existing monolithic PlumbLineObservatory.jsx into a view-aware shell with swappable view components. The data, state, and UI chrome are lifted into the shell; each view receives props.
+
+
+PlumbLineObservatory.jsx (shell)├── ViewSwitcher.jsx         — mode bar, keyboard shortcut handler├── FilterSidebar.jsx        — tribe/manipulation/principle filters├── NodeDetailPanel.jsx      — right panel (unchanged from v1)├── views/│   ├── SphereView.jsx       — existing Three.js canvas (refactored out)│   ├── ForceGraphView.jsx   — new D3 force simulation│   ├── RadarView.jsx        — new D3 radar chart + comparison│   └── TimelineView.jsx     — new D3 timeline + scrubber└── hooks/    ├── useNodeFiltering.js  — filter logic shared across all views    ├── useEdgeComputation.js — edge weight computation (shared)    └── useViewTransition.js — cross-fade animation controller
+
+
+8.3 Shared State Shape
+The following state lives in the shell and is passed as props to each view component:
+State Key
+	Type
+	Description
+	viewMode
+	"sphere" | "force" | "radar" | "timeline"
+	Active view mode
+	selectedNode
+	Node | null
+	Currently selected node (drives detail panel and radar)
+	hoveredId
+	string | null
+	Currently hovered node id (drives highlight in all views)
+	activeFilters
+	{ tribes: string[], manipulations: string[], principles: string[] }
+	Active filter state
+	compareNodeId
+	string | null
+	Second node for radar overlay comparison (radar mode only)
+	timeRange
+	[Date, Date] | null
+	Active scrubber window (timeline mode only)
+	clusterByTribe
+	boolean
+	Force graph cluster toggle
+	showLabels
+	boolean
+	Force graph label toggle
+	
+
+8.4 Performance Requirements
+Metric
+	Target
+	Approach
+	Initial load time
+	<2.5s on 50Mbps
+	Code-split each view; lazy-load D3 only when needed
+	3D sphere fps
+	>55fps at 13 nodes
+	No change from v1
+	Force graph fps during drag
+	>30fps at 50 nodes
+	requestAnimationFrame loop; alpha decay after stable
+	View mode transition
+	<400ms perceived
+	Canvas cross-fade; defer new view render to after fade-in
+	Radar render
+	<100ms on node select
+	Pure SVG path calculation; no library overhead
+	Timeline scrubber drag
+	<16ms per frame
+	Throttled D3 brush event handler; opacity-only DOM change
+	Bundle size (gzip)
+	<400KB initial
+	Three.js and D3 lazy-loaded; code splitting per view
+	
+
+________________
+
+
+9. Full Phase Roadmap
+
+
+Phase 1  ● Complete
+Visual Foundation — 3D Discourse Sphere
+	
+
+Phase 1 delivered the core concept: 13 hand-crafted discourse analysis nodes rendered as glowing 3D spheres in a star-field environment. The Three.js canvas, mouse interaction (drag/zoom/click/hover), filter sidebar, and detail panel are all live.
+Deliverable
+	Status
+	Three.js 3D sphere canvas with 13 nodes
+	Done
+	Node data model (manipulation[], biblical[], plumb{})
+	Done
+	Tribe colour system (Right, Left, Religion, Geopolitics)
+	Done
+	Filter sidebar (by tribe and manipulation type)
+	Done
+	Node detail panel (description, scores, tags)
+	Done
+	Mouse drag, zoom, click, hover interactions
+	Done
+	Edge computation from shared manipulation/biblical keys
+	Done
+	Vercel deployment
+	Done
+	
+
+Phase 2  ● Active
+Multi-Lens — 2D Network, Radar, Timeline
+	
+
+Phase 2 transforms the Observatory from a single stunning view into a multi-lens instrument. Each view mode surfaces a different truth about the data, making the structural analysis accessible to different cognitive styles and use cases.
+Deliverable
+	Priority
+	Status
+	View mode switcher UI (mode bar + keyboard shortcuts)
+	P0
+	To do
+	Shell/view component refactor
+	P0
+	To do
+	Date field added to all 13 existing nodes
+	P0 prerequisite
+	To do
+	D3 force-directed graph view
+	P0
+	To do
+	Cluster-by-tribe toggle for force graph
+	P1
+	To do
+	Fingerprint radar chart (single node)
+	P0
+	To do
+	Radar comparison mode (two nodes overlaid)
+	P1
+	To do
+	Manipulation tag cloud in radar view
+	P1
+	To do
+	Timeline scrubber view with tribe swim lanes
+	P0
+	To do
+	Play animation for timeline scrubber
+	P1
+	To do
+	Edge arc overlay in timeline (by manipulation type)
+	P2
+	To do
+	Cross-fade view transition animation
+	P1
+	To do
+	Design token system (:root CSS variables)
+	P0
+	To do
+	Font upgrade (Space Grotesk, Inter, JetBrains Mono)
+	P1
+	To do
+	Keyboard navigation (1-4 mode, arrow keys, Escape)
+	P1
+	To do
+	Performance: code splitting per view
+	P2
+	To do
+	
+
+Phase 3  ● Planned
+Living Data — AI Ingestion + Real-Time Analysis
+	
+
+Phase 3 transforms the Observatory from a curated exhibit into a living organism. The Claude API becomes the analysis engine: paste a URL, receive a fully-structured node. GDELT provides the firehose. The data scales from 13 to hundreds of nodes.
+Deliverable
+	Description
+	Claude API analysis pipeline
+	Drop in raw article text, receive structured JSON: manipulation[], biblical[], plumb{}
+	GDELT data integration
+	Live global discourse events filtered by theme, country, and date
+	NewsAPI headline ingestion
+	Live headlines from 150k sources; category filtering
+	User submission flow
+	Any visitor pastes a URL; Claude analyses it; pending admin approval queue
+	Admin review panel
+	Approve or reject auto-generated nodes before they go live
+	WebGPU rendering upgrade
+	Handle thousands of nodes without frame-rate degradation
+	Custom GLSL shaders
+	Node surface texture encodes plumb score intensity
+	Particle edge flows
+	Animated particles along edges visualise "narrative contagion"
+	Natural language query
+	User types "show urgency + asymmetric framing" — matching nodes pulse forward
+	Embeddable widget
+	Any website can host a filtered view of the Observatory
+	
+
+________________
+
+
+10. Non-Functional Requirements
+10.1 Accessibility
+* All interactive elements (nodes, mode switcher, filter controls) are keyboard focusable and operable
+* Focus indicators are visible at 3:1 contrast minimum
+* Colour is never the sole means of conveying information (tribe colour is always accompanied by a text label)
+* Three.js canvas has an aria-label; non-visual alternatives are provided via the detail panel
+* Animation respects prefers-reduced-motion: force simulation disabled, radar renders statically, timeline scrubber auto-play disabled
+* All text meets WCAG AA contrast ratios against the dark background
+
+
+10.2 Browser Support
+Browser
+	Support Level
+	Chrome / Edge (latest)
+	Full — primary target
+	Firefox (latest)
+	Full
+	Safari 16+
+	Full
+	Safari 15 and below
+	Best effort — Three.js WebGL may degrade
+	Internet Explorer
+	Not supported
+	
+
+10.3 Security
+* No user data is collected or transmitted — the tool is entirely client-side
+* No user authentication, login, or personal data handling in Phase 2
+* External font CDN requests only (Google Fonts); no other third-party network calls
+* Content Security Policy headers set via Vercel config
+
+
+10.4 Internationalisation
+* English only in Phase 2
+* Text strings are not hardcoded in component logic — they will be moved to a constants file in Phase 2 to prepare for i18n in Phase 3
+
+
+________________
+
+
+11. Out of Scope — Phase 2
+  i  
+	The following are explicitly excluded from Phase 2. Including them risks scope creep that would delay the core view mode deliverables. Each has a designated phase for delivery.
+	
+
+Item
+	Reason for Exclusion
+	Target Phase
+	AI-powered node generation (Claude API)
+	Requires backend infrastructure and admin tooling not in scope for Phase 2
+	Phase 3
+	Live data ingestion (GDELT, NewsAPI)
+	Requires backend, API key management, rate limiting, and data pipeline
+	Phase 3
+	User-submitted nodes
+	Requires auth, moderation queue, and spam protection
+	Phase 3
+	User accounts or authentication
+	No user-specific features exist in Phase 2
+	Phase 3
+	WebGPU / GLSL shader upgrade
+	Three.js WebGL is adequate for current node count
+	Phase 3
+	Particle edge flows / narrative contagion animation
+	Requires significantly more rendering complexity
+	Phase 3
+	Natural language query interface
+	Requires Claude API integration
+	Phase 3
+	Embeddable widget / iframe API
+	Requires separate bundle and API design
+	Phase 3
+	Chord diagram view
+	Valuable but not prioritised above core view modes
+	Phase 3
+	Export / download (PNG, SVG, CSV)
+	Nice-to-have; not core to the epistemology instrument use case
+	Phase 3
+	Mobile-first responsive design
+	Desktop browser is the primary environment for this tool
+	Phase 3
+	Dark/light mode toggle
+	Dark mode is the singular deliberate design choice
+	Not planned
+	
+
+________________
+
+
+12. Milestones
+Milestone
+	Deliverables
+	Dependencies
+	M0 — Data Prep
+	Date field added to all 13 nodes. Design tokens (:root CSS variables) established. Font upgrade applied. Shell/view refactor complete.
+	None — must be done before any view work begins
+	M1 — Force Graph
+	D3 force-directed graph view fully functional. View mode switcher live. Cross-fade transitions working. Cluster-by-tribe toggle working.
+	M0 complete
+	M2 — Radar View
+	Fingerprint radar chart live for all nodes. Comparison mode (two nodes overlaid) working. Manipulation tag cloud live.
+	M0 complete
+	M3 — Timeline View
+	Timeline with tribe swim lanes live. Scrubber drag functional. Play animation working. Date-range label accurate.
+	M0 complete (date fields required)
+	M4 — Polish & QA
+	Keyboard navigation (all shortcuts). Accessibility audit. Cross-browser testing. Performance profiling (code splitting). Lighthouse score ≥90.
+	M1, M2, M3 complete
+	M5 — Phase 2 Launch
+	Vercel deploy with all four view modes. README updated. Demo GIF / video for social sharing.
+	M4 complete
+	
+
+________________
+
+
+13. Open Questions
+#
+	Question
+	Impact
+	Owner
+	Q1
+	What dates should be assigned to the 13 existing nodes? Should they reflect the date of the original discourse, or the date it entered the news cycle?
+	High — affects timeline layout and any time-based clustering
+	Laith
+	Q2
+	Should the 3D sphere view be updated to share the new design token system, or frozen at its current visual state?
+	Medium — shared tokens would unify the visual language but require touching the existing Three.js code
+	Laith
+	Q3
+	Is the "compare two nodes" feature in radar view triggered by right-click context menu, or by a second node selector in the panel UI?
+	Low — UX decision, both are viable
+	Design review
+	Q4
+	Should the timeline view support a "free floating" layout (nodes at arbitrary Y positions within their swim lane) or a strict top-aligned grid?
+	Medium — free floating is more visually interesting but risks overlap
+	Design review
+	Q5
+	What is the target date for Phase 2 launch? This determines whether M1–M3 milestones are parallelised or sequential.
+	High — affects resource allocation and development approach
+	Laith
+	Q6
+	Should the force graph support touch/pointer input for mobile drag interactions, or remain desktop-only?
+	Low — mobile is out of scope for Phase 2 but touch support would be quick to add
+	Engineering
+	Q7
+	Are there additional nodes planned for Phase 2, or does the new data model require full Phase 3 infrastructure before new nodes can be added?
+	Medium — affects whether the timeline is useful at launch or needs more data points first
+	Laith
+	
+
+________________
+
+
+14. Related Documents
+Document
+	Description
+	Location
+	CLAUDE.md
+	Claude Code project guidance — architecture, commands, component structure
+	Repository root
+	Phase 1 Codebase
+	PlumbLineObservatory.jsx — single-file application, all current functionality
+	/src/components/
+	Phase 3 Vision Map
+	Visual roadmap of Phase 3 features including AI pipeline, GDELT integration, WebGPU, and embeddable widget
+	Produced in conversation, March 2026
+	Data Model Spec
+	Full node schema, manipulation type definitions, biblical principle definitions, edge weight computation logic
+	Section 5 of this document
+	
+
+
+
+Plumb Line Observatory — PRD v2.0
+© 2026 Laith Wallace. Prepared with Claude Code.
+© 2026 Laith Wallace. All rights reserved. /
