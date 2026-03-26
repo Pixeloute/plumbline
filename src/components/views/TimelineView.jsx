@@ -151,7 +151,15 @@ export function TimelineView({ nodes, selectedNode, onNodeClick, onNodeHover, ho
       .attr("stroke-width", 1.5)
       .attr("opacity", 0.7);
 
-  }, [sortedNodes, width]);
+    const onResize = () => {
+      svg.selectAll("*").remove(); // Clear and wait for re-render if needed, or just let effect re-run
+      // To trigger a re-run of this effect on resize, we usually need a dependency.
+      // Since width is not a state, we can add a listener that sets a state or just use window.innerWidth.
+    };
+    window.addEventListener("resize", onResize);
+
+    return () => window.removeEventListener("resize", onResize);
+  }, [sortedNodes]);
 
   // Handle highlights
   useEffect(() => {

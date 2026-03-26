@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { TRIBES } from "../../constants/data";
 
-export function ForceGraphView({ nodes, edges, selectedNode, hoveredId, onNodeClick, onNodeHover, clusterByTribe }) {
+export function ForceGraphView({ nodes, edges, selectedNode, hoveredId, onNodeClick, onNodeHover, clusterByTribe, showLabels }) {
   const svgRef = useRef(null);
   const simulationRef = useRef(null);
 
@@ -107,7 +107,7 @@ export function ForceGraphView({ nodes, edges, selectedNode, hoveredId, onNodeCl
     }
 
     return () => simulation.stop();
-  }, [nodes, edges, clusterByTribe]);
+  }, [nodes, edges, clusterByTribe, showLabels]);
 
   // Handle highlights and Focus Mode
   useEffect(() => {

@@ -172,10 +172,13 @@ export function SphereView({ nodes, edges, selectedNode, hoveredId, onNodeClick,
         const rect = mountRef.current.getBoundingClientRect();
         mouse3DRef.current.x = ((e2.clientX - rect.left) / rect.width) * 2 - 1;
         mouse3DRef.current.y = -((e2.clientY - rect.top) / rect.height) * 2 + 1;
-        raycasterRef.current.setFromCamera(mouse3DRef.current, cameraRef.current);
-        const hits = raycasterRef.current.intersectObjects(Object.values(meshesRef.current));
-        if (hits.length > 0) onNodeClick(nodes.find(n => n.id === hits[0].object.userData.nodeId));
-        else onNodeClick(null);
+        
+        if (cameraRef.current) {
+          raycasterRef.current.setFromCamera(mouse3DRef.current, cameraRef.current);
+          const hits = raycasterRef.current.intersectObjects(Object.values(meshesRef.current));
+          if (hits.length > 0) onNodeClick(nodes.find(n => n.id === hits[0].object.userData.nodeId));
+          else onNodeClick(null);
+        }
       }
       setTimeout(() => autoRotateRef.current = true, 2000);
       window.removeEventListener("mousemove", onMove);
@@ -187,6 +190,7 @@ export function SphereView({ nodes, edges, selectedNode, hoveredId, onNodeClick,
   };
 
   const handleMouseMove = (e) => {
+    if (!mountRef.current || !cameraRef.current) return;
     const rect = mountRef.current.getBoundingClientRect();
     mouse3DRef.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     mouse3DRef.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
